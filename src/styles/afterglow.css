@@ -1,0 +1,15 @@
+/* Afterglow UI — single stylesheet entry.
+ *
+ *   import "afterglow-ui/style.css";
+ *
+ * Tokens → base → utilities → components → motion. Every rule sits in an
+ * @layer, so normal unlayered app CSS always wins without !important.
+ */
+@import "./tokens.css";
+@import "./base.css";
+@import "./utilities.css";
+@import "./forms.css";
+@import "./surfaces.css";
+@import "./nav.css";
+@import "./data.css";
+@import "./motion.css";

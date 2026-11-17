@@ -1,0 +1,206 @@
+/* Afterglow — design tokens.
+ *
+ * One accent, six surfaces, one hairline. Everything else is derived with
+ * color-mix(in oklab, …) so a single --ag-brand change re-skins the system.
+ * Light theme overrides the same names; no component knows which is active.
+ */
+@layer ag.reset, ag.tokens, ag.base, ag.components, ag.utilities;
+
+:root {
+  color-scheme: dark;
+
+  /* type */
+  --ag-font: "Inter var", Inter, system-ui, "Segoe UI", "Microsoft YaHei UI", "PingFang SC", sans-serif;
+  --ag-mono: ui-monospace, "Cascadia Mono", "JetBrains Mono", Consolas, "SF Mono", monospace;
+  --ag-fs-xs: 10.5px;
+  --ag-fs-sm: 12px;
+  --ag-fs: 13px;
+  --ag-fs-md: 14.5px;
+  --ag-fs-lg: 17px;
+  --ag-fs-xl: 22px;
+  --ag-fs-2xl: 30px;
+  --ag-lh: 1.5;
+  --ag-lh-tight: 1.18;
+  --ag-tracking-label: 0.075em;
+
+  /* space — 2px grid */
+  --ag-s1: 2px;
+  --ag-s2: 4px;
+  --ag-s3: 6px;
+  --ag-s4: 8px;
+  --ag-s5: 12px;
+  --ag-s6: 16px;
+  --ag-s7: 20px;
+  --ag-s8: 28px;
+  --ag-s9: 40px;
+  --ag-s10: 56px;
+
+  /* radius */
+  --ag-r-xs: 5px;
+  --ag-r-sm: 7px;
+  --ag-r-md: 9px;
+  --ag-r-lg: 12px;
+  --ag-r-xl: 16px;
+  --ag-r-2xl: 20px;
+  --ag-r-full: 999px;
+
+  /* controls */
+  --ag-control: 30px;
+  --ag-control-sm: 26px;
+  --ag-control-lg: 36px;
+  --ag-field-pad: 0 10px;
+
+  /* motion — durations are tuned for pointer feedback, not decoration */
+  --ag-dur-1: 90ms;
+  --ag-dur-2: 140ms;
+  --ag-dur-3: 200ms;
+  --ag-dur-4: 320ms;
+  --ag-dur-5: 520ms;
+  --ag-dur-spring: 460ms;
+  --ag-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ag-ease-in: cubic-bezier(0.55, 0, 0.85, 0.2);
+  --ag-ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Real spring curves (sampled from k=700/38, k=260/26, k=420/22). */
+  --ag-spring-snap: linear(0, 0.036, 0.123, 0.24, 0.367, 0.494, 0.612, 0.716, 0.804, 0.875, 0.931, 0.972, 1.002, 1.021, 1.032, 1.038, 1.039, 1.037, 1.033, 1.029, 1.024, 1.019, 1.014, 1.01, 1.007, 1.004, 1.002, 1.001, 1, 0.999, 0.999, 0.998, 0.998, 0.999, 0.999, 0.999, 0.999, 0.999, 0.999, 1);
+  --ag-spring: linear(0, 0.028, 0.098, 0.192, 0.297, 0.404, 0.507, 0.601, 0.684, 0.756, 0.817, 0.867, 0.907, 0.938, 0.963, 0.981, 0.994, 1.003, 1.008, 1.012, 1.013, 1.014, 1.013, 1.012, 1.011, 1.01, 1.008, 1.007, 1.005, 1.004, 1.003, 1.002, 1.002, 1.001, 1.001, 1, 1, 1, 1, 1);
+  --ag-spring-bounce: linear(0, 0.063, 0.216, 0.41, 0.609, 0.787, 0.93, 1.034, 1.098, 1.13, 1.135, 1.123, 1.1, 1.073, 1.046, 1.023, 1.005, 0.993, 0.985, 0.982, 0.982, 0.984, 0.987, 0.991, 0.995, 0.998, 1, 1.001, 1.002, 1.002, 1.002, 1.002, 1.002, 1.001, 1.001, 1, 1, 1, 1, 1);
+
+  /* depth */
+  --ag-scrim: rgba(3, 5, 9, 0.56);
+  --ag-backdrop: blur(7px) saturate(1.05);
+  --ag-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --ag-shadow-2: 0 10px 24px -12px rgba(0, 0, 0, 0.7), 0 2px 6px -2px rgba(0, 0, 0, 0.5);
+  --ag-shadow-3: 0 28px 64px -24px rgba(0, 0, 0, 0.86), 0 8px 18px -10px rgba(0, 0, 0, 0.6);
+  --ag-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+
+  /* z */
+  --ag-z-dropdown: 40;
+  --ag-z-overlay: 50;
+  --ag-z-modal: 60;
+  --ag-z-toast: 70;
+  --ag-z-tooltip: 80;
+}
+
+/* ---------------- dark (default) ---------------- */
+:root,
+[data-ag-theme="dark"] {
+  color-scheme: dark;
+
+  --ag-bg: #07080b;
+  --ag-bg-sunken: #0a0c11;
+  --ag-surface: #0e1117;
+  --ag-surface-2: #131821;
+  --ag-surface-3: #1a212c;
+  --ag-surface-4: #222a37;
+
+  --ag-line: rgba(255, 255, 255, 0.062);
+  --ag-line-strong: rgba(255, 255, 255, 0.11);
+  --ag-line-hair: rgba(255, 255, 255, 0.035);
+  --ag-border-control: rgba(255, 255, 255, 0.17);
+  --ag-line-brand: color-mix(in oklab, var(--ag-brand) 34%, transparent);
+
+  --ag-text: #e9eef7;
+  --ag-text-2: #a4afc1;
+  --ag-text-3: #6d7889;
+  --ag-text-on-solid: #041018;
+
+  --ag-seed: #63c6ff;
+  --ag-brand: var(--ag-seed);
+  --ag-brand-bright: color-mix(in oklab, var(--ag-brand), #eafaff 34%);
+  --ag-brand-dim: color-mix(in oklab, var(--ag-brand) 62%, #0b1622);
+  --ag-brand-soft: color-mix(in oklab, var(--ag-brand) 13%, transparent);
+  --ag-brand-softer: color-mix(in oklab, var(--ag-brand) 7%, transparent);
+  --ag-solid-a: color-mix(in oklab, var(--ag-brand), #ffffff 46%);
+  --ag-solid-b: color-mix(in oklab, var(--ag-brand), #3b8fd6 26%);
+
+  --ag-ok: #3ddba0;
+  --ag-warn: #ffc061;
+  --ag-danger: #ff6b86;
+  --ag-ok-soft: color-mix(in oklab, var(--ag-ok) 12%, transparent);
+  --ag-warn-soft: color-mix(in oklab, var(--ag-warn) 12%, transparent);
+  --ag-danger-soft: color-mix(in oklab, var(--ag-danger) 12%, transparent);
+
+  --ag-track: #28323f;
+  --ag-track-soft: #1a2029;
+  --ag-raise: rgba(255, 255, 255, 0.04);
+  --ag-skein: linear-gradient(180deg, color-mix(in oklab, var(--ag-surface-2), white 3%), var(--ag-surface));
+
+  --ag-panel-glow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --ag-hair-gradient: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+
+/* ---------------- light ---------------- */
+[data-ag-theme="light"] {
+  color-scheme: light;
+
+  --ag-bg: #eef1f6;
+  --ag-bg-sunken: #e7ebf3;
+  --ag-surface: #ffffff;
+  --ag-surface-2: #f7f9fc;
+  --ag-surface-3: #eef2f8;
+  --ag-surface-4: #e3e9f2;
+
+  --ag-line: rgba(16, 24, 40, 0.10);
+  --ag-line-strong: rgba(16, 24, 40, 0.17);
+  --ag-line-hair: rgba(16, 24, 40, 0.055);
+  --ag-border-control: rgba(16, 24, 40, 0.24);
+  --ag-line-brand: color-mix(in oklab, var(--ag-brand) 42%, transparent);
+
+  --ag-text: #0d1420;
+  --ag-text-2: #4b5768;
+  --ag-text-3: #77808f;
+  --ag-text-on-solid: #ffffff;
+
+  /* Light keeps the same hue but sinks it far enough for white-on-brand text. */
+  --ag-brand: color-mix(in oklab, var(--ag-seed) 42%, #06305c);
+  --ag-brand-bright: color-mix(in oklab, var(--ag-brand), #9ed3ff 30%);
+  --ag-brand-dim: color-mix(in oklab, var(--ag-brand) 80%, #062a4a);
+  --ag-brand-soft: color-mix(in oklab, var(--ag-brand) 11%, transparent);
+  --ag-brand-softer: color-mix(in oklab, var(--ag-brand) 5%, transparent);
+  --ag-solid-a: color-mix(in oklab, var(--ag-brand), #072c4d 26%);
+  --ag-solid-b: color-mix(in oklab, var(--ag-brand), #041f36 44%);
+
+  --ag-ok: #0f9d6b;
+  --ag-warn: #b06a00;
+  --ag-danger: #d92f52;
+  --ag-ok-soft: color-mix(in oklab, var(--ag-ok) 11%, transparent);
+  --ag-warn-soft: color-mix(in oklab, var(--ag-warn) 13%, transparent);
+  --ag-danger-soft: color-mix(in oklab, var(--ag-danger) 9%, transparent);
+
+  --ag-track: #cfd8e5;
+  --ag-track-soft: #e4eaf2;
+  --ag-raise: rgba(16, 24, 40, 0.035);
+  --ag-skein: linear-gradient(180deg, #ffffff, #fbfcfe);
+
+  --ag-scrim: rgba(16, 24, 40, 0.34);
+  --ag-backdrop: blur(6px) saturate(1.02);
+  --ag-shadow-1: 0 1px 2px rgba(16, 24, 40, 0.10);
+  --ag-shadow-2: 0 10px 24px -14px rgba(16, 24, 40, 0.28), 0 2px 6px -2px rgba(16, 24, 40, 0.12);
+  --ag-shadow-3: 0 30px 64px -26px rgba(16, 24, 40, 0.35), 0 6px 16px -8px rgba(16, 24, 40, 0.16);
+  --ag-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --ag-panel-glow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --ag-hair-gradient: linear-gradient(90deg, transparent, rgba(16, 24, 40, 0.10), transparent);
+}
+
+/* Brand presets: set data-ag-brand on <html>; themes derive their own ramp
+ * from the seed so light mode keeps its contrast instead of inheriting the
+ * dark-mode pastels. */
+[data-ag-brand="cyan"] { --ag-seed: #63c6ff; }
+[data-ag-brand="lime"] { --ag-seed: #a8e05f; }
+[data-ag-brand="amber"] { --ag-seed: #ffb84d; }
+[data-ag-brand="rose"] { --ag-seed: #ff8fa8; }
+[data-ag-brand="violet"] { --ag-seed: #b6a4ff; }
+[data-ag-brand="mint"] { --ag-seed: #5ee0c0; }
+
+/* Registered so rings and meters can be transitioned as numbers. */
+@property --ag-v {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --ag-twist {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}

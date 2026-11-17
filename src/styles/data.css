@@ -1,0 +1,375 @@
+/* Afterglow — data display: tables, meters, rings, rolling numbers,
+ * sparklines, virtual lists. Everything that changes at frame rate here
+ * writes transform or text only; nothing animates width/height/top. */
+@layer ag.components {
+  /* ---------------- table ---------------- */
+  .ag-table-wrap {
+    border: 1px solid var(--ag-line);
+    border-radius: var(--ag-r-lg);
+    background: var(--ag-surface);
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .ag-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ag-table caption {
+    caption-side: top;
+    padding: 0 0 var(--ag-s4);
+    color: var(--ag-text-3);
+    font-size: var(--ag-fs-sm);
+    text-align: left;
+  }
+
+  .ag-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--ag-line);
+    background: color-mix(in oklab, var(--ag-surface) 94%, var(--ag-bg));
+    color: var(--ag-text-3);
+    font-size: var(--ag-fs-xs);
+    font-weight: 600;
+    letter-spacing: var(--ag-tracking-label);
+    text-transform: uppercase;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .ag-table tbody td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--ag-line-hair);
+    color: var(--ag-text-2);
+    vertical-align: middle;
+  }
+
+  .ag-table tbody tr:last-child td { border-bottom: 0; }
+
+  .ag-table tbody tr {
+    transition: background-color var(--ag-dur-1) linear;
+  }
+
+  .ag-table tbody tr:hover { background: var(--ag-raise); }
+
+  .ag-table tbody tr[aria-selected="true"] {
+    background: var(--ag-brand-softer);
+    box-shadow: inset 2px 0 0 var(--ag-brand);
+  }
+
+  .ag-table [data-num],
+  .ag-table th[data-num] {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ag-table [data-strong] { color: var(--ag-text); font-weight: 560; }
+  .ag-table [data-dim] { color: var(--ag-text-3); }
+
+  .ag-table[data-density="compact"] tbody td { padding: 4px 10px; }
+  .ag-table[data-density="compact"] thead th { padding: 6px 10px; }
+
+  .ag-table[data-zebra="true"] tbody tr:nth-child(even) { background: var(--ag-raise); }
+  .ag-table[data-zebra="true"] tbody tr:nth-child(even):hover { background: color-mix(in oklab, var(--ag-raise), var(--ag-text) 4%); }
+
+  .ag-th-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    cursor: pointer;
+  }
+
+  .ag-th-sort::after {
+    content: "↑↓";
+    font-size: 8px;
+    letter-spacing: -1px;
+    opacity: 0.28;
+    transition: opacity var(--ag-dur-1) linear;
+  }
+
+  .ag-th-sort:hover::after { opacity: 0.7; }
+  th[aria-sort="ascending"] .ag-th-sort::after { content: "↑"; opacity: 1; color: var(--ag-brand); }
+  th[aria-sort="descending"] .ag-th-sort::after { content: "↓"; opacity: 1; color: var(--ag-brand); }
+
+  .ag-table td .ag-meter { min-width: 84px; }
+
+  /* ---------------- meter ---------------- */
+  .ag-meter {
+    display: flex;
+    align-items: center;
+    gap: var(--ag-s4);
+    min-width: 0;
+  }
+
+  .ag-meter__track {
+    position: relative;
+    flex: 1;
+    height: 6px;
+    border-radius: var(--ag-r-full);
+    background: var(--ag-track);
+    overflow: hidden;
+  }
+
+  .ag-meter__fill {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg,
+      color-mix(in oklab, var(--ag-brand) 62%, var(--ag-track)),
+      var(--ag-brand));
+    transform: scaleX(var(--ag-v, 0));
+    transform-origin: left center;
+    transition: transform var(--ag-dur-4) var(--ag-ease-out);
+  }
+
+  .ag-meter[data-tone="ok"] .ag-meter__fill {
+    background: linear-gradient(90deg, color-mix(in oklab, var(--ag-ok) 55%, var(--ag-track)), var(--ag-ok));
+  }
+
+  .ag-meter[data-tone="warn"] .ag-meter__fill {
+    background: linear-gradient(90deg, color-mix(in oklab, var(--ag-warn) 55%, var(--ag-track)), var(--ag-warn));
+  }
+
+  .ag-meter[data-tone="danger"] .ag-meter__fill {
+    background: linear-gradient(90deg, color-mix(in oklab, var(--ag-danger) 55%, var(--ag-track)), var(--ag-danger));
+  }
+
+  .ag-meter__value {
+    flex: none;
+    min-width: 46px;
+    color: var(--ag-text-2);
+    font-family: var(--ag-mono);
+    font-size: var(--ag-fs-xs);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ag-meter[data-size="lg"] .ag-meter__track { height: 8px; }
+  .ag-meter[data-size="sm"] .ag-meter__track { height: 4px; }
+
+  .ag-meter[data-indeterminate="true"] .ag-meter__fill {
+    inset: 0 auto 0 0;
+    width: 38%;
+    transform: none;
+    animation: ag-indeterminate 1.35s var(--ag-ease-inout) infinite;
+  }
+
+  /* ---------------- ring ---------------- */
+  .ag-ring-wrap {
+    --ag-ring-size: 76px;
+    --ag-ring-thick: 7px;
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: var(--ag-ring-size);
+    height: var(--ag-ring-size);
+    flex: none;
+  }
+
+  .ag-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+      from -90deg,
+      var(--ag-brand-dim),
+      var(--ag-brand) calc(var(--ag-v, 0) * 360deg),
+      var(--ag-track) 0
+    );
+    -webkit-mask: radial-gradient(farthest-side,
+      transparent calc(100% - var(--ag-ring-thick) - 0.5px),
+      #000 calc(100% - var(--ag-ring-thick)));
+    mask: radial-gradient(farthest-side,
+      transparent calc(100% - var(--ag-ring-thick) - 0.5px),
+      #000 calc(100% - var(--ag-ring-thick)));
+    transition: --ag-v var(--ag-dur-5) var(--ag-ease-out);
+  }
+
+  .ag-ring-wrap[data-tone="ok"] .ag-ring {
+    background: conic-gradient(from -90deg, color-mix(in oklab, var(--ag-ok) 55%, var(--ag-track)), var(--ag-ok) calc(var(--ag-v, 0) * 360deg), var(--ag-track) 0);
+  }
+
+  .ag-ring-wrap[data-tone="warn"] .ag-ring {
+    background: conic-gradient(from -90deg, color-mix(in oklab, var(--ag-warn) 55%, var(--ag-track)), var(--ag-warn) calc(var(--ag-v, 0) * 360deg), var(--ag-track) 0);
+  }
+
+  .ag-ring-wrap[data-tone="danger"] .ag-ring {
+    background: conic-gradient(from -90deg, color-mix(in oklab, var(--ag-danger) 55%, var(--ag-track)), var(--ag-danger) calc(var(--ag-v, 0) * 360deg), var(--ag-track) 0);
+  }
+
+  .ag-ring__val {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.1;
+  }
+
+  .ag-ring__val b {
+    font-size: calc(var(--ag-ring-size) * 0.2);
+    font-weight: 640;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ag-ring__val span {
+    margin-top: 2px;
+    color: var(--ag-text-3);
+    font-size: var(--ag-fs-xs);
+    letter-spacing: var(--ag-tracking-label);
+    text-transform: uppercase;
+  }
+
+  /* ---------------- rolling numbers ---------------- */
+  .ag-flow {
+    display: inline-flex;
+    align-items: baseline;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+    line-height: 1;
+  }
+
+  .ag-flow__digit {
+    position: relative;
+    display: inline-block;
+    height: 1em;
+    overflow: hidden;
+    width: 1ch;
+    vertical-align: baseline;
+  }
+
+  .ag-flow__strip {
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--ag-dur-5) var(--ag-spring);
+  }
+
+  .ag-flow__strip > i {
+    display: block;
+    height: 1em;
+    line-height: 1;
+    font-style: normal;
+    text-align: center;
+  }
+
+  .ag-flow__sep {
+    display: inline-block;
+    opacity: 0.55;
+  }
+
+  .ag-flow__unit {
+    margin-left: 0.28em;
+    color: var(--ag-text-3);
+    font-size: 0.55em;
+    font-weight: 600;
+    letter-spacing: var(--ag-tracking-label);
+    text-transform: uppercase;
+  }
+
+  /* ---------------- sparkline ---------------- */
+  .ag-spark {
+    display: block;
+    width: 100%;
+    height: var(--ag-spark-h, 52px);
+    overflow: visible;
+  }
+
+  /* ---------------- virtual list ---------------- */
+  .ag-vlist {
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+    contain: strict;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--ag-text-3) 40%, transparent) transparent;
+  }
+
+  .ag-vlist__sizer {
+    position: relative;
+    width: 100%;
+  }
+
+  .ag-vlist__rows {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    contain: layout paint style;
+  }
+
+  .ag-vlist__row {
+    height: var(--ag-row-h, 28px);
+    contain: layout paint style;
+  }
+
+  /* ---------------- stat / empty ---------------- */
+  .ag-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .ag-stat__label {
+    color: var(--ag-text-3);
+    font-size: var(--ag-fs-xs);
+    font-weight: 600;
+    letter-spacing: var(--ag-tracking-label);
+    text-transform: uppercase;
+  }
+
+  .ag-stat__value {
+    color: var(--ag-text);
+    font-size: var(--ag-fs-xl);
+    font-weight: 640;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ag-stat__delta {
+    font-size: var(--ag-fs-sm);
+    color: var(--ag-text-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ag-stat__delta[data-tone="ok"] { color: var(--ag-ok); }
+  .ag-stat__delta[data-tone="danger"] { color: var(--ag-danger); }
+
+  .ag-empty {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: var(--ag-s3);
+    padding: var(--ag-s9) var(--ag-s6);
+    color: var(--ag-text-3);
+    text-align: center;
+    font-size: var(--ag-fs-sm);
+  }
+
+  .ag-empty__icon {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--ag-r-md);
+    border: 1px solid var(--ag-line);
+    background: var(--ag-surface-2);
+    color: var(--ag-text-3);
+  }
+}

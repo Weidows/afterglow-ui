@@ -1,0 +1,156 @@
+/* Afterglow — navigation: tabs with a shared indicator, plus the vertical
+ * rail variant. The indicator is one element moved with transform, never a
+ * per-tab background swap. */
+@layer ag.components {
+  .ag-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ag-s5);
+    min-width: 0;
+  }
+
+  .ag-tablist {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    min-width: 0;
+    border-bottom: 1px solid var(--ag-line);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .ag-tablist::-webkit-scrollbar { display: none; }
+
+  .ag-tab {
+    position: relative;
+    flex: none;
+    height: 34px;
+    padding: 0 11px;
+    border: 0;
+    background: transparent;
+    color: var(--ag-text-3);
+    font-family: inherit;
+    font-size: var(--ag-fs);
+    font-weight: 560;
+    letter-spacing: 0.005em;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--ag-dur-2) var(--ag-ease-out);
+  }
+
+  .ag-tab:hover { color: var(--ag-text-2); }
+
+  .ag-tab[aria-selected="true"] { color: var(--ag-text); }
+
+  .ag-tab:focus-visible {
+    outline: 2px solid var(--ag-brand);
+    outline-offset: -3px;
+    border-radius: var(--ag-r-xs);
+  }
+
+  .ag-tab__count {
+    margin-left: 6px;
+    padding: 0 5px;
+    border-radius: var(--ag-r-full);
+    background: var(--ag-surface-3);
+    color: var(--ag-text-3);
+    font-family: var(--ag-mono);
+    font-size: var(--ag-fs-xs);
+    line-height: 15px;
+  }
+
+  .ag-tablist__indicator {
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    z-index: 1;
+    width: 0;
+    height: 2px;
+    border-radius: 2px 2px 0 0;
+    background: var(--ag-brand);
+    box-shadow: 0 0 10px color-mix(in oklab, var(--ag-brand) 55%, transparent);
+    transition:
+      transform var(--ag-dur-4) var(--ag-spring),
+      width var(--ag-dur-4) var(--ag-spring);
+    pointer-events: none;
+  }
+
+  /* Pill variant: the indicator becomes a filled thumb. */
+  .ag-tabs[data-variant="pill"] .ag-tablist {
+    align-self: flex-start;
+    gap: 2px;
+    padding: 2px;
+    border: 1px solid var(--ag-line);
+    border-radius: var(--ag-r-md);
+    background: var(--ag-bg-sunken);
+    border-bottom: 1px solid var(--ag-line);
+  }
+
+  .ag-tabs[data-variant="pill"] .ag-tab {
+    height: calc(var(--ag-control) - 6px);
+    padding: 0 11px;
+    border-radius: var(--ag-r-sm);
+    color: var(--ag-text-3);
+  }
+
+  .ag-tabs[data-variant="pill"] .ag-tab[aria-selected="true"] { color: var(--ag-text); }
+
+  .ag-tabs[data-variant="pill"] .ag-tablist__indicator {
+    top: 2px;
+    bottom: auto;
+    height: calc(100% - 4px);
+    border-radius: var(--ag-r-sm);
+    background: var(--ag-surface-2);
+    box-shadow: var(--ag-shadow-inset), 0 1px 2px rgba(0, 0, 0, 0.16);
+  }
+
+  .ag-tabpanel {
+    min-width: 0;
+    outline: none;
+  }
+
+  .ag-tabpanel[hidden] { display: none; }
+
+  .ag-tabs[data-animate="true"] .ag-tabpanel:not([hidden]) {
+    animation: ag-panel-in var(--ag-dur-3) var(--ag-ease-out);
+  }
+
+  /* Vertical rail, for settings-like pages. */
+  .ag-tabs[data-orientation="vertical"] {
+    flex-direction: row;
+    gap: var(--ag-s6);
+  }
+
+  .ag-tabs[data-orientation="vertical"] .ag-tablist {
+    flex-direction: column;
+    align-items: stretch;
+    border-right: 1px solid var(--ag-line);
+    border-bottom: 0;
+    padding-right: var(--ag-s3);
+    width: 184px;
+    flex: none;
+    overflow: visible;
+  }
+
+  .ag-tabs[data-orientation="vertical"] .ag-tab {
+    height: 32px;
+    padding: 0 10px;
+    text-align: left;
+    border-radius: var(--ag-r-xs);
+  }
+
+  .ag-tabs[data-orientation="vertical"] .ag-tab[aria-selected="true"] {
+    background: var(--ag-brand-softer);
+  }
+
+  .ag-tabs[data-orientation="vertical"] .ag-tablist__indicator {
+    left: auto;
+    right: -1px;
+    bottom: auto;
+    width: 2px;
+    height: 0;
+    border-radius: 2px;
+    box-shadow: none;
+  }
+}

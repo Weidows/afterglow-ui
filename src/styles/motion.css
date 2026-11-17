@@ -1,0 +1,74 @@
+/* Afterglow — motion. Every keyframe moves only transform and opacity, so
+ * the compositor owns them and the main thread stays free for sampling.
+ * Springs are sampled linear() curves from tokens.css. */
+@layer ag.components {
+  @keyframes ag-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes ag-fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @keyframes ag-dialog-in {
+    from { opacity: 0; transform: translateY(10px) scale(0.978); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes ag-dialog-out {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(6px) scale(0.988); }
+  }
+
+  @keyframes ag-pop-in {
+    from { opacity: 0; transform: translateY(-4px) scale(0.972); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes ag-pop-out {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(-3px) scale(0.982); }
+  }
+
+  @keyframes ag-toast-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.972); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes ag-toast-out {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(4px) scale(0.976); }
+  }
+
+  @keyframes ag-toast-bar {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
+
+  @keyframes ag-panel-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes ag-ping {
+    0% { transform: scale(0.7); opacity: 0.7; }
+    70%, 100% { transform: scale(2.6); opacity: 0; }
+  }
+
+  @keyframes ag-sweep {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+  }
+
+  @keyframes ag-indeterminate {
+    0% { transform: translateX(-110%); }
+    55% { transform: translateX(160%); }
+    100% { transform: translateX(160%); }
+  }
+
+  @keyframes ag-spin {
+    to { transform: rotate(360deg); }
+  }
+}
