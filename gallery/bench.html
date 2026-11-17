@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-Hans" data-ag-theme="dark" data-ag-brand="cyan">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Afterglow UI — 性能实验室</title>
+  <script>
+    (() => {
+      try {
+        const stored = localStorage.getItem("afterglow:theme");
+        const theme = stored === "light" || stored === "dark"
+          ? stored
+          : (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+        document.documentElement.dataset.agTheme = theme;
+        const brand = localStorage.getItem("afterglow:brand");
+        if (brand) document.documentElement.dataset.agBrand = brand;
+      } catch { /* private mode */ }
+    })();
+  </script>
+</head>
+<body class="ag-root">
+  <header class="bench-top">
+    <a class="bench-back" href="./index.html"><span data-icon="arrowRight" data-size="13"></span>返回组件库</a>
+    <div class="bench-title"><b>Performance lab</b><span>100k 行虚拟列表 · 240 个 60 Hz 仪表 · 帧间隔直方图</span></div>
+  </header>
+
+  <main class="bench-main">
+    <section class="bench-hero">
+      <span class="ag-eyebrow">motion contract, measured</span>
+      <h1>不是"感觉流畅"，<br />是帧间隔说话。</h1>
+      <p>这一页不加载任何额外动画库。列表只渲染可见窗口，仪表只写 <code>--ag-v</code>，其余交给合成器。</p>
+    </section>
+
+    <section class="bench-stats">
+      <article class="ag-card bench-stat">
+        <span class="ag-eyebrow">fps · p50</span>
+        <b id="stat-fps" class="bench-stat__value ag-num">—</b>
+        <span id="stat-p50" class="ag-hint">等待采样</span>
+      </article>
+      <article class="ag-card bench-stat">
+        <span class="ag-eyebrow">p95 frame</span>
+        <b id="stat-p95" class="bench-stat__value ag-num">—</b>
+        <span id="stat-p99" class="ag-hint">p99 —</span>
+      </article>
+      <article class="ag-card bench-stat">
+        <span class="ag-eyebrow">dropped</span>
+        <b id="stat-dropped" class="bench-stat__value ag-num">—</b>
+        <span class="ag-hint">超过 1.5× 中位帧</span>
+      </article>
+      <article class="ag-card bench-stat">
+        <span class="ag-eyebrow">long tasks</span>
+        <b id="stat-long" class="bench-stat__value ag-num">—</b>
+        <span id="stat-longest" class="ag-hint">最长 —</span>
+      </article>
+    </section>
+
+    <section class="ag-card bench-controls">
+      <div class="bench-controls__group">
+        <label class="ag-label" for="bench-rows">列表行数</label>
+        <select class="ag-select" id="bench-rows">
+          <option value="10000">10,000</option>
+          <option value="100000" selected>100,000</option>
+        </select>
+      </div>
+      <div class="bench-controls__group">
+        <span class="ag-label">数据流</span>
+        <div class="ag-segmented" id="bench-stream" role="group" aria-label="数据流">
+          <button class="ag-seg" data-value="on" aria-pressed="true">运行</button>
+          <button class="ag-seg" data-value="off" aria-pressed="false">暂停</button>
+        </div>
+      </div>
+      <div class="bench-controls__group">
+        <span class="ag-label">帧探针</span>
+        <button class="ag-btn" id="bench-reset" data-variant="outline" data-size="sm">重置统计</button>
+      </div>
+      <p class="bench-note ag-hint">headless 浏览器里，p50 会锁在虚拟刷新间隔上；重点看 p95、长任务与 dropped 是否接近 0。</p>
+    </section>
+
+    <section class="bench-split">
+      <article class="ag-card bench-panel">
+        <header class="bench-panel__head">
+          <div>
+            <h2>虚拟列表</h2>
+            <p class="ag-hint">固定 26 px 行高，可见窗口约 20 行；数据 20 Hz 刷新。</p>
+          </div>
+          <span class="ag-badge" data-tone="brand" id="bench-rows-badge">100,000 rows</span>
+        </header>
+        <div id="bench-list" class="ag-vlist ag-scroll bench-list" role="grid" aria-label="压力测试列表"></div>
+      </article>
+
+      <article class="ag-card bench-panel">
+        <header class="bench-panel__head">
+          <div>
+            <h2>240 个仪表</h2>
+            <p class="ag-hint">每帧只写 CSS 变量，进度用 scaleX 合成。</p>
+          </div>
+          <span class="ag-badge" data-tone="ok">60 Hz</span>
+        </header>
+        <div id="bench-meters" class="bench-meters"></div>
+      </article>
+    </section>
+
+    <section class="ag-card bench-panel">
+      <header class="bench-panel__head">
+        <div>
+          <h2>整表重绘 vs 键控复用</h2>
+          <p class="ag-hint">同样 2,000 行数字，比较 "拼字符串 + innerHTML" 与 "复用节点 + 只改文本" 的脚本耗时。</p>
+        </div>
+        <button class="ag-btn" id="bench-compare" data-variant="primary" data-size="sm">跑 10 轮</button>
+      </header>
+      <div class="bench-compare">
+        <div class="bench-compare__col">
+          <span class="ag-eyebrow">innerHTML rebuild</span>
+          <b id="bench-naive" class="bench-stat__value ag-num">—</b>
+          <span class="ag-hint">ms / 轮</span>
+        </div>
+        <div class="bench-compare__col">
+          <span class="ag-eyebrow">keyed patch</span>
+          <b id="bench-patched" class="bench-stat__value ag-num">—</b>
+          <span class="ag-hint">ms / 轮</span>
+        </div>
+        <div class="bench-compare__col">
+          <span class="ag-eyebrow">gain</span>
+          <b id="bench-gain" class="bench-stat__value ag-num">—</b>
+          <span class="ag-hint">倍</span>
+        </div>
+      </div>
+      <p class="ag-hint" id="bench-verdict">点「跑 10 轮」在当前机器上实测。</p>
+    </section>
+
+    <footer class="bench-foot">
+      <span>Afterglow UI · MIT</span>
+      <span class="ag-spacer"></span>
+      <a href="https://github.com/Weidows/afterglow-ui" target="_blank" rel="noreferrer">github.com/Weidows/afterglow-ui</a>
+    </footer>
+  </main>
+
+  <script type="module" src="./bench.ts"></script>
+</body>
+</html>

@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="zh-Hans" data-ag-theme="dark" data-ag-brand="cyan">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Afterglow UI — 桌面组件库</title>
+  <meta name="description" content="CSS 优先、零依赖的桌面 UI 组件库：合成器动画、键控列表与虚拟滚动。" />
+  <script>
+    (() => {
+      try {
+        const stored = localStorage.getItem("afterglow:theme");
+        const theme = stored === "light" || stored === "dark"
+          ? stored
+          : (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+        document.documentElement.dataset.agTheme = theme;
+        const brand = localStorage.getItem("afterglow:brand");
+        if (brand) document.documentElement.dataset.agBrand = brand;
+      } catch { /* private mode */ }
+    })();
+  </script>
+</head>
+<body class="ag-root">
+  <div class="shell">
+    <aside class="rail">
+      <div class="brand">
+        <span class="brand__mark">A</span>
+        <div class="brand__text"><b>Afterglow</b><small>ui · 0.1.0</small></div>
+      </div>
+
+      <label class="search">
+        <span class="search__icon" data-icon="search" data-size="13"></span>
+        <input id="gallery-search" class="ag-input" type="search" placeholder="搜索组件…" aria-label="搜索组件" />
+        <span class="ag-kbd search__kbd">⌘K</span>
+      </label>
+
+      <nav class="toc" aria-label="组件索引">
+        <span class="toc__label">Foundations</span>
+        <a href="#foundations">色彩 · 字阶 · 圆角</a>
+        <span class="toc__label">Components</span>
+        <a href="#buttons">Buttons</a>
+        <a href="#inputs">Inputs</a>
+        <a href="#navigation">Navigation</a>
+        <a href="#overlays">Overlays</a>
+        <a href="#data">Data display</a>
+        <span class="toc__label">Motion</span>
+        <a href="#motion">动效与性能</a>
+      </nav>
+
+      <div class="rail__foot">
+        <a href="./bench.html">性能实验室 →</a>
+        <a href="https://github.com/Weidows/afterglow-ui" target="_blank" rel="noreferrer">GitHub ↗</a>
+        <span>MIT · 无运行时依赖</span>
+      </div>
+    </aside>
+
+    <main class="doc" id="doc">
+      <header class="topbar">
+        <div class="crumbs">
+          <span>组件库</span><span class="sep">/</span><b>概览</b>
+        </div>
+        <div class="topbar__tools">
+          <div class="brands" role="group" aria-label="品牌色">
+            <button class="brand-dot" data-brand="cyan" style="--dot:#63c6ff" aria-label="青色" aria-pressed="true"></button>
+            <button class="brand-dot" data-brand="lime" style="--dot:#a8e05f" aria-label="青柠" aria-pressed="false"></button>
+            <button class="brand-dot" data-brand="amber" style="--dot:#ffb84d" aria-label="琥珀" aria-pressed="false"></button>
+            <button class="brand-dot" data-brand="rose" style="--dot:#ff8fa8" aria-label="玫红" aria-pressed="false"></button>
+            <button class="brand-dot" data-brand="violet" style="--dot:#b6a4ff" aria-label="紫罗兰" aria-pressed="false"></button>
+          </div>
+          <div class="ag-segmented" id="density-demo" role="group" aria-label="密度" data-compact>
+            <button class="ag-seg" data-value="compact" aria-pressed="false">紧凑</button>
+            <button class="ag-seg" data-value="default" aria-pressed="true">标准</button>
+            <button class="ag-seg" data-value="comfortable" aria-pressed="false">宽松</button>
+          </div>
+          <button class="ag-iconbtn" id="theme-toggle" aria-label="切换明暗主题" data-tip="切换明暗主题">
+            <span data-icon="moon" data-size="15"></span>
+          </button>
+          <div class="fps" id="fps" aria-label="实时帧率"></div>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="hero" id="overview">
+          <div class="hero__eyebrow">
+            <span class="ag-status" data-tone="live"><span class="ag-status__dot"></span>compositor only</span>
+            <span class="hero__ver">v0.1.0 · MIT</span>
+          </div>
+          <h1>界面不该为<br />动画<em>让路</em>。</h1>
+          <p class="hero__lead">
+          一套 CSS 优先的桌面组件库：按钮、表单、浮层、表格与图表共用同一份设计令牌。
+          高频动效只改 <code>transform</code> 与 <code>opacity</code>，列表按 key 复用节点，
+          十万行滚动依旧贴着刷新率走。
+          </p>
+          <div class="hero__actions">
+            <button class="ag-btn" data-variant="primary" data-copy="#install">
+              <span class="ag-btn__icon" data-icon="copy"></span>复制安装命令
+            </button>
+            <a class="ag-btn" data-variant="outline" href="#buttons">浏览组件</a>
+            <a class="ag-btn" data-variant="ghost" href="./bench.html">性能实验室 <span data-icon="arrowRight" data-size="13"></span></a>
+          </div>
+          <pre class="install" id="install"><code>npm i afterglow-ui</code><small>css 50 kB · esm 54 kB · 0 deps</small></pre>
+          <div class="hero__stats">
+            <span class="stat-chip"><b>0</b> 运行时依赖</span>
+            <span class="stat-chip"><b>2</b> 个属性参与动画</span>
+            <span class="stat-chip"><b>100k</b> 行虚拟列表</span>
+            <span class="stat-chip"><b>AA</b> 焦点环与键盘路径</span>
+          </div>
+        </section>
+
+        <section class="spec" id="foundations" data-keywords="token 颜色 色彩 字体 字阶 圆角 主题 theme color type radius">
+          <header class="spec__head">
+            <span class="spec__index">01</span>
+            <div>
+              <h2>Foundations</h2>
+              <p class="spec__desc">六层表面、一条发丝线、一个强调色。改 <code>--ag-seed</code> 一个值，整套明暗令牌重新推导，组件无需知道当前主题。</p>
+            </div>
+          </header>
+
+          <div class="stage">
+            <span class="stage__label">surfaces &amp; semantics</span>
+            <div class="swatches">
+              <div class="swatch"><span class="swatch__chip" style="--chip:var(--ag-bg)"></span><span class="swatch__name">--ag-bg</span><span class="swatch__value">#07080b</span></div>
+              <div class="swatch"><span class="swatch__chip" style="--chip:var(--ag-surface)"></span><span class="swatch__name">--ag-surface</span><span class="swatch__value">#0e1117</span></div>
+              <div class="swatch"><span class="swatch__chip" style="--chip:var(--ag-surface-2)"></span><span class="swatch__name">--ag-surface-2</span><span class="swatch__value">#131821</span></div>
+              <div class="swatch"><span class="swatch__chip" style="--chip:var(--ag-brand)"></span><span class="swatch__name">--ag-brand</span><span class="swatch__value">seed 派生</span></div>
+              <div class="swatch"><span class="swatch__chip" style="--chip:var(--ag-ok)"></span><span class="swatch__name">--ag-ok</span><span class="swatch__value">#3ddba0</span></div>
+              <div class="swatch"><span class="swatch__chip" style="--chip:var(--ag-warn)"></span><span class="swatch__name">--ag-warn</span><span class="swatch__value">#ffc061</span></div>
+              <div class="swatch"><span class="swatch__chip" style="--chip:var(--ag-danger)"></span><span class="swatch__name">--ag-danger</span><span class="swatch__value">#ff6b86</span></div>
+              <div class="swatch"><span class="swatch__chip" style="--chip:var(--ag-text)"></span><span class="swatch__name">--ag-text</span><span class="swatch__value">#e9eef7</span></div>
+              <div class="swatch"><span class="swatch__chip" style="--chip:var(--ag-text-2)"></span><span class="swatch__name">--ag-text-2</span><span class="swatch__value">#a4afc1</span></div>
+              <div class="swatch"><span class="swatch__chip" style="--chip:var(--ag-line-strong)"></span><span class="swatch__name">--ag-line</span><span class="swatch__value">hairline</span></div>
+            </div>
+          </div>
+
+          <div class="stage">
+            <div class="demo-grid">
+              <div>
+                <span class="stage__label">type ramp</span>
+                <div class="ramp">
+                  <div class="ramp__row"><span class="ramp__token">--ag-fs-2xl</span><span class="ramp__sample" style="font-size:30px;font-weight:650;letter-spacing:-.035em">98.2% 命中</span></div>
+                  <div class="ramp__row"><span class="ramp__token">--ag-fs-xl</span><span class="ramp__sample" style="font-size:22px;font-weight:640;letter-spacing:-.03em">缓存加速器</span></div>
+                  <div class="ramp__row"><span class="ramp__token">--ag-fs-lg</span><span class="ramp__sample" style="font-size:17px;font-weight:620">磁盘 3 · 已接管</span></div>
+                  <div class="ramp__row"><span class="ramp__token">--ag-fs</span><span class="ramp__sample" style="font-size:13px">正文 13px，宽松行高 1.5。</span></div>
+                  <div class="ramp__row"><span class="ramp__token">--ag-fs-sm</span><span class="ramp__sample ag-muted" style="font-size:12px">辅助说明 12px，仅用于次要信息。</span></div>
+                  <div class="ramp__row"><span class="ramp__token">--ag-fs-xs</span><span class="ramp__sample ag-dim ag-mono" style="font-size:10.5px;letter-spacing:.075em">MICRO / 10.5PX / TRACKED</span></div>
+                </div>
+              </div>
+              <div>
+                <span class="stage__label">radius</span>
+                <div class="demo-row" data-gap="lg">
+                  <div style="display:grid;place-items:center;width:64px;height:48px;background:var(--ag-surface-2);border:1px solid var(--ag-line-strong);border-radius:4px;font-family:var(--ag-mono);font-size:10px;color:var(--ag-text-3)">4</div>
+                  <div style="display:grid;place-items:center;width:64px;height:48px;background:var(--ag-surface-2);border:1px solid var(--ag-line-strong);border-radius:7px;font-family:var(--ag-mono);font-size:10px;color:var(--ag-text-3)">7</div>
+                  <div style="display:grid;place-items:center;width:64px;height:48px;background:var(--ag-surface-2);border:1px solid var(--ag-line-strong);border-radius:12px;font-family:var(--ag-mono);font-size:10px;color:var(--ag-text-3)">12</div>
+                  <div style="display:grid;place-items:center;width:64px;height:48px;background:var(--ag-surface-2);border:1px solid var(--ag-line-strong);border-radius:16px;font-family:var(--ag-mono);font-size:10px;color:var(--ag-text-3)">16</div>
+                  <div style="display:grid;place-items:center;width:64px;height:48px;background:var(--ag-surface-2);border:1px solid var(--ag-line-strong);border-radius:999px;font-family:var(--ag-mono);font-size:10px;color:var(--ag-text-3)">∞</div>
+                </div>
+                <span class="stage__label" style="margin-top:20px">elevation</span>
+                <p class="ag-hint">面板靠发丝线与顶部高光分层；只有浮层使用阴影，内容区不堆叠灰盒子。</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="spec" id="buttons" data-keywords="button 按钮 action 操作 icon 图标 loading 加载 kbd 快捷键">
+          <header class="spec__head">
+            <span class="spec__index">02</span>
+            <div>
+              <h2>Buttons</h2>
+              <p class="spec__desc">按下的 60 ms 内就给出反馈：<code>scale(.986)</code> 而不是延迟，动效只作用于合成层。主按钮用接近白热的强调色面，焦点环始终可见。</p>
+            </div>
+          </header>
+
+          <div class="stage">
+            <span class="stage__label">variants</span>
+            <div class="demo-row">
+              <button class="ag-btn" data-variant="primary">开始加速</button>
+              <button class="ag-btn">刷新</button>
+              <button class="ag-btn" data-variant="soft">安全模式</button>
+              <button class="ag-btn" data-variant="outline">导出日志</button>
+              <button class="ag-btn" data-variant="ghost">取消</button>
+              <button class="ag-btn" data-variant="danger">强制停止</button>
+              <button class="ag-btn" disabled>不可用</button>
+            </div>
+            <div class="demo-row">
+              <button class="ag-btn" data-variant="primary" data-loading="true">正在启动</button>
+              <button class="ag-btn" data-size="sm">小号</button>
+              <button class="ag-btn" data-size="lg" data-variant="primary">大号</button>
+              <button class="ag-btn" data-variant="primary">⌘ 快捷操作<span class="ag-btn__kbd">⌘K</span></button>
+            </div>
+            <div class="demo-row" data-gap="lg">
+              <button class="ag-iconbtn" aria-label="暂停" data-tip="暂停采样"><span data-icon="pause" data-size="15"></span></button>
+              <button class="ag-iconbtn" data-variant="solid" aria-label="刷新" data-tip="重新采样计数器"><span data-icon="refresh" data-size="15"></span></button>
+              <button class="ag-iconbtn" aria-label="复制" data-tip="复制 IQN"><span data-icon="copy" data-size="15"></span></button>
+              <button class="ag-iconbtn" aria-label="更多" data-tip="更多操作"><span data-icon="more" data-size="15"></span></button>
+              <span class="ag-kbd">Esc</span>
+              <span class="ag-badge" data-tone="brand"><span class="ag-badge__dot"></span>destructive 需二次确认</span>
+            </div>
+          </div>
+
+          <details class="code">
+            <summary>html <button class="ag-iconbtn" data-copy="#code-button" aria-label="复制"><span data-icon="copy" data-size="12"></span></button></summary>
+            <pre id="code-button"><code>&lt;button class="ag-btn" data-variant="primary"&gt;开始加速&lt;/button&gt;
+&lt;button class="ag-btn" data-variant="danger"&gt;强制停止&lt;/button&gt;
+&lt;button class="ag-btn" data-loading="true"&gt;正在启动&lt;/button&gt;</code></pre>
+          </details>
+        </section>
+
+        <section class="spec" id="inputs" data-keywords="input 输入 表单 form field 字段 select 选择 slider 滑块 switch 开关 checkbox 复选 radio 单选 textarea">
+          <header class="spec__head">
+            <span class="spec__index">03</span>
+            <div>
+              <h2>Inputs</h2>
+              <p class="spec__desc">原生控件保留语义与表单行为，样式全部来自类名。选择器与滑块只做渐进增强，禁用 JS 时控件仍然可用。</p>
+            </div>
+          </header>
+
+          <div class="stage">
+            <div class="demo-grid">
+              <div class="ag-field">
+                <div class="ag-field__head"><label class="ag-label" for="d-name">缓存名称</label><span class="ag-hint">可选</span></div>
+                <div class="ag-input-wrap">
+                  <span class="ag-input-wrap__icon" data-icon="layers" data-size="14"></span>
+                  <input class="ag-input" id="d-name" type="text" value="optane-l2" placeholder="给这层缓存起个名字" />
+                </div>
+                <span class="ag-hint">仅用于日志与账本标识。</span>
+              </div>
+
+              <div class="ag-field">
+                <label class="ag-label" for="d-iqn">iSCSI IQN</label>
+                <input class="ag-input" id="d-iqn" type="text" aria-invalid="true" value="iqn.2026-01.dev.cacab:hdd" />
+                <span class="ag-hint" data-tone="error">目标名已存在，请换一个后缀。</span>
+              </div>
+
+              <div class="ag-field">
+                <label class="ag-label" for="d-notes">备注</label>
+                <textarea class="ag-textarea" id="d-notes" rows="3" placeholder="例如：给 D 盘做读缓存，256 MiB 大文件直写"></textarea>
+                <span class="ag-hint">写入策略不会因为备注改变。</span>
+              </div>
+
+              <div class="ag-field">
+                <label class="ag-label" for="d-interval">采样间隔</label>
+                <select class="ag-select" id="d-interval">
+                  <option value="500">0.5 秒</option>
+                  <option value="1000" selected>1 秒</option>
+                  <option value="2000">2 秒</option>
+                  <option value="5000">5 秒</option>
+                </select>
+                <span class="ag-hint">开启「性能」页时生效，其余时间不采样。</span>
+              </div>
+
+              <div class="ag-field">
+                <div class="ag-field__head"><label class="ag-label" for="d-l1">L1 内存缓存</label><span class="ag-mono ag-dim" id="l1-readout">512 MiB</span></div>
+                <input class="ag-range" id="d-l1" type="range" min="64" max="2048" step="32" value="512" data-ag-range data-unit=" MiB" />
+                <span class="ag-hint">4 KiB 块，按需增长；重启后保留。</span>
+              </div>
+
+              <div class="ag-field">
+                <span class="ag-label">运行选项</span>
+                <label class="ag-choice">
+                  <input class="ag-switch" type="checkbox" checked />
+                  <span class="ag-choice__text">关窗口后继续加速<span class="ag-choice__note">收进托盘，盘符不会掉</span></span>
+                </label>
+                <label class="ag-choice">
+                  <input class="ag-check" type="checkbox" checked />
+                  <span class="ag-choice__text">大文件直写<span class="ag-choice__note">≥ 256 KiB 不进入缓存</span></span>
+                </label>
+                <label class="ag-choice">
+                  <input class="ag-check" type="checkbox" />
+                  <span class="ag-choice__text">启用 ghost 准入<span class="ag-choice__note">缓存满后只接收淘汰过的块</span></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="demo-panel" style="margin-top:22px">
+              <div class="demo-panel__head"><span>写入策略</span><span class="ag-badge">无线电组</span></div>
+              <div class="ag-stack" data-gap="sm">
+                <label class="ag-choice"><input class="ag-radio" type="radio" name="policy" checked /><span class="ag-choice__text">写透传<span class="ag-choice__note">每次写都落盘，最安全</span></span></label>
+                <label class="ag-choice"><input class="ag-radio" type="radio" name="policy" /><span class="ag-choice__text">先写 L1，空闲回写<span class="ag-choice__note">断电可能丢最近 2 秒</span></span></label>
+                <label class="ag-choice"><input class="ag-radio" type="radio" name="policy" /><span class="ag-choice__text">只读缓存<span class="ag-choice__note">不接收任何写入</span></span></label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="spec" id="navigation" data-keywords="tab 标签页 segmented 分段 导航 navigation nav">
+          <header class="spec__head">
+            <span class="spec__index">04</span>
+            <div>
+              <h2>Navigation</h2>
+              <p class="spec__desc">一个共享指示块，用 <code>transform</code> 平移；切换视图只重排两个属性。键盘方向键、Home / End 与 roving tabindex 一并处理。</p>
+            </div>
+          </header>
+
+          <div class="stage">
+            <div class="ag-tabs" id="demo-tabs" data-ag-tabs>
+              <div class="ag-tablist" role="tablist" aria-label="缓存视图">
+                <button class="ag-tab" role="tab" aria-selected="true">实时</button>
+                <button class="ag-tab" role="tab">最近 5 分钟</button>
+                <button class="ag-tab" role="tab">配置<span class="ag-tab__count">6</span></button>
+              </div>
+              <div class="ag-tabpanel" role="tabpanel">
+                <div class="demo-grid" data-cols="3" style="gap:14px">
+                  <div class="demo-panel"><div class="ag-eyebrow">读取</div><div class="ag-stat__value ag-num" style="margin-top:6px">1.42 GB/s</div><div class="ag-stat__delta" data-tone="ok">命中率 98.2%</div></div>
+                  <div class="demo-panel"><div class="ag-eyebrow">写入</div><div class="ag-stat__value ag-num" style="margin-top:6px">86 MB/s</div><div class="ag-stat__delta">待回写 12 MiB</div></div>
+                  <div class="demo-panel"><div class="ag-eyebrow">延迟</div><div class="ag-stat__value ag-num" style="margin-top:6px">0.31 ms</div><div class="ag-stat__delta" data-tone="ok">P95 · 走内存</div></div>
+                </div>
+              </div>
+              <div class="ag-tabpanel" role="tabpanel" hidden>
+                <div class="demo-panel">
+                  <div class="ag-row ag-between"><span class="ag-eyebrow">5 分钟吞吐</span><span class="ag-badge" data-tone="ok">稳定</span></div>
+                  <div class="ag-spark" style="height:96px;margin-top:10px"><canvas id="tab-spark" class="ag-spark" style="height:96px"></canvas></div>
+                </div>
+              </div>
+              <div class="ag-tabpanel" role="tabpanel" hidden>
+                <div class="demo-grid">
+                  <div class="ag-field"><label class="ag-label" for="nav-l2">L2 卷</label><select class="ag-select" id="nav-l2"><option>G: (傲腾)</option><option>H: (备用)</option></select></div>
+                  <div class="ag-field"><label class="ag-label" for="nav-blk">块大小</label><select class="ag-select" id="nav-blk"><option>4 KiB</option><option>8 KiB</option></select></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage">
+            <div class="demo-row">
+              <div class="ag-segmented" id="segmented-demo" role="group" aria-label="时间范围">
+                <button class="ag-seg" data-value="day" aria-pressed="true">今日</button>
+                <button class="ag-seg" data-value="week" aria-pressed="false">本周</button>
+                <button class="ag-seg" data-value="month" aria-pressed="false">本月</button>
+              </div>
+              <span class="ag-hint" id="segmented-out">选中：day</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="spec" id="overlays" data-keywords="dialog 对话框 modal menu 菜单 popover 浮层 toast 通知 tooltip 提示 overlay">
+          <header class="spec__head">
+            <span class="spec__index">05</span>
+            <div>
+              <h2>Overlays</h2>
+              <p class="spec__desc">全部落在浏览器顶层（<code>&lt;dialog&gt;</code> 与 popover API），不再和 z-index 打架；退出动画播完才卸载，Esc 与焦点归还由平台负责一半、我们补一半。</p>
+            </div>
+          </header>
+
+          <div class="stage">
+            <span class="stage__label">dialogs</span>
+            <div class="demo-row">
+              <button class="ag-btn" data-variant="primary" id="open-dialog">打开对话框</button>
+              <button class="ag-btn" data-variant="danger" id="confirm-stop">危险确认</button>
+              <button class="ag-btn" data-variant="outline" id="confirm-safe">普通确认</button>
+            </div>
+
+            <span class="stage__label" style="margin-top:22px">notifications</span>
+            <div class="demo-row">
+              <button class="ag-btn" data-toast="ok" data-message="磁盘 3 已重新联机">成功 toast</button>
+              <button class="ag-btn" data-toast="info" data-message="正在停止加速，等待会话登出">信息 toast</button>
+              <button class="ag-btn" data-toast="warn" data-message="L2 卷剩余空间不足 8%">警告 toast</button>
+              <button class="ag-btn" data-toast="err" data-message="独占打开失败：另一个进程持有该盘">错误 toast</button>
+              <button class="ag-btn" data-variant="ghost" id="toast-action">带操作</button>
+            </div>
+
+            <span class="stage__label" style="margin-top:22px">menus &amp; tooltips</span>
+            <div class="demo-row">
+              <button class="ag-btn" data-menu="menu-actions" data-tip="菜单支持方向键与字母跳转">
+                磁盘操作 <span data-icon="chevronDown" data-size="13"></span>
+              </button>
+              <button class="ag-btn" data-variant="outline" id="popover-demo">锚定浮层</button>
+              <span class="ag-badge" data-tip="徽标也能挂延迟提示">hover / focus 420 ms</span>
+            </div>
+          </div>
+
+          <details class="code">
+            <summary>html</summary>
+            <pre><code>&lt;button class="ag-btn" data-menu="menu-actions"&gt;磁盘操作&lt;/button&gt;
+&lt;div class="ag-menu" id="menu-actions" popover="manual"&gt;…&lt;/div&gt;
+
+const dismiss = toast("磁盘 3 已重新联机", { tone: "ok" });</code></pre>
+          </details>
+        </section>
+
+        <section class="spec" id="data" data-keywords="table 表格 data 数据 meter 进度 ring 环形 number 数字 sparkline 图表 virtual 虚拟列表">
+          <header class="spec__head">
+            <span class="spec__index">06</span>
+            <div>
+              <h2>Data display</h2>
+              <p class="spec__desc">监控类界面的主体：密集表格、环形仪表、滚动数字与虚拟列表。数值用等宽数字，更新时不会推动列宽；进度条用 <code>scaleX</code> 而不是宽度。</p>
+            </div>
+          </header>
+
+          <div class="stage">
+            <span class="stage__label">dense table</span>
+            <div class="ag-table-wrap table-demo">
+              <table class="ag-table" data-density="compact">
+                <thead>
+                  <tr>
+                    <th>进程</th><th data-num>PID</th><th data-num>CPU</th><th data-num>内存</th><th>磁盘</th><th>状态</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td data-strong><div class="ag-row" data-gap="xs"><span class="ag-avatar" data-size="sm">C</span> Cacab.exe</div></td>
+                    <td data-num>7840</td><td data-num>3.2%</td><td data-num>86 MiB</td>
+                    <td><div class="ag-meter"><div class="ag-meter__track"><div class="ag-meter__fill" style="--ag-v:.32"></div></div></div></td>
+                    <td><span class="ag-status" data-tone="live"><span class="ag-status__dot"></span>运行</span></td>
+                  </tr>
+                  <tr>
+                    <td data-strong>iSCSI Target</td><td data-num>—</td><td data-num>0.4%</td><td data-num>12 MiB</td>
+                    <td><div class="ag-meter"><div class="ag-meter__track"><div class="ag-meter__fill" style="--ag-v:.08"></div></div></div></td>
+                    <td><span class="ag-badge" data-tone="ok">已登录</span></td>
+                  </tr>
+                  <tr>
+                    <td data-strong>msedge.exe</td><td data-num>11024</td><td data-num>11.8%</td><td data-num>1.4 GiB</td>
+                    <td><div class="ag-meter"><div class="ag-meter__track"><div class="ag-meter__fill" style="--ag-v:.71"></div></div></div></td>
+                    <td><span class="ag-tag">前台</span></td>
+                  </tr>
+                  <tr>
+                    <td data-strong>System</td><td data-num>4</td><td data-num>2.1%</td><td data-num>224 KiB</td>
+                    <td><div class="ag-meter"><div class="ag-meter__track"><div class="ag-meter__fill" style="--ag-v:.18"></div></div></div></td>
+                    <td><span class="ag-tag">内核</span></td>
+                  </tr>
+                  <tr>
+                    <td data-strong>TelemetryHost.exe</td><td data-num>9028</td><td data-num>0.9%</td><td data-num>64 MiB</td>
+                    <td><div class="ag-meter"><div class="ag-meter__track"><div class="ag-meter__fill" style="--ag-v:.39"></div></div></div></td>
+                    <td><span class="ag-badge" data-tone="warn">磁盘忙</span></td>
+                  </tr>
+                  <tr>
+                    <td data-strong>explorer.exe</td><td data-num>5120</td><td data-num>1.4%</td><td data-num>312 MiB</td>
+                    <td><div class="ag-meter"><div class="ag-meter__track"><div class="ag-meter__fill" style="--ag-v:.24"></div></div></div></td>
+                    <td><span class="ag-tag">前台</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="stage">
+            <div class="vitals">
+              <div class="rings">
+                <div class="ag-ring-wrap">
+                  <div class="ag-ring" data-ring="cpu" style="--ag-v:.42"></div>
+                  <div class="ag-ring__val"><b data-ring-value="cpu">42%</b><span>CPU</span></div>
+                </div>
+                <div class="ag-ring-wrap" data-tone="warn">
+                  <div class="ag-ring" data-ring="mem" style="--ag-v:.71"></div>
+                  <div class="ag-ring__val"><b data-ring-value="mem">71%</b><span>内存</span></div>
+                </div>
+                <div class="ag-ring-wrap">
+                  <div class="ag-ring" data-ring="disk" style="--ag-v:.26"></div>
+                  <div class="ag-ring__val"><b data-ring-value="disk">26%</b><span>磁盘</span></div>
+                </div>
+              </div>
+              <div class="kpi">
+                <span class="ag-eyebrow">命中吞吐</span>
+                <div class="kpi__value"><span id="kpi-flow"></span></div>
+                <div class="kpi__meta"><span class="ag-badge" data-tone="ok">+12.4%</span><span>相对上一分钟</span></div>
+              </div>
+            </div>
+            <div class="spark-wrap" style="margin-top:20px">
+              <canvas id="spark" class="ag-spark" aria-label="吞吐趋势"></canvas>
+              <div class="spark-wrap__foot"><span>60 s 吞吐</span><span id="spark-readout">—</span></div>
+            </div>
+          </div>
+
+          <div class="stage">
+            <span class="stage__label">virtual list · 1000 rows · 2 Hz</span>
+            <div class="vlist-demo">
+              <div class="vlist-demo__head">
+                <span class="ag-row" data-gap="sm"><span data-icon="cpu" data-size="13"></span> 进程采样</span>
+                <span id="vlist-range">—</span>
+              </div>
+              <div id="vlist" class="ag-vlist ag-scroll" role="grid" aria-label="进程采样列表"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="spec" id="motion" data-keywords="motion 动效 性能 fps 动画 spring 弹簧 刷新率 benchmark">
+          <header class="spec__head">
+            <span class="spec__index">07</span>
+            <div>
+              <h2>Motion &amp; performance</h2>
+              <p class="spec__desc">高频动画只允许 <code>transform</code> 与 <code>opacity</code>；列表按 key 复用、滚动窗口外零节点；曲线是真实弹簧采样的 <code>linear()</code>，不是猜的贝塞尔。</p>
+            </div>
+          </header>
+
+          <div class="stage">
+            <div class="spring-grid">
+              <div class="spring-card">
+                <strong>snap</strong><code>k700 · c38 · 0.42 s</code>
+                <div class="spring-track"><span class="spring-ball" data-spring="snap"></span></div>
+              </div>
+              <div class="spring-card">
+                <strong>soft</strong><code>k260 · c26 · 0.62 s</code>
+                <div class="spring-track"><span class="spring-ball" data-spring="soft"></span></div>
+              </div>
+              <div class="spring-card">
+                <strong>bounce</strong><code>k420 · c22 · 0.73 s</code>
+                <div class="spring-track"><span class="spring-ball" data-spring="bounce"></span></div>
+              </div>
+            </div>
+            <div class="demo-row" style="margin-top:16px">
+              <button class="ag-btn" data-variant="soft" id="spring-play">播放三段弹簧</button>
+              <span class="ag-hint">在浏览器里直接跑 Web Animations API，曲线来自 <code>springEasing()</code>。</span>
+            </div>
+          </div>
+
+          <div class="stage">
+            <div class="demo-grid">
+              <div>
+                <span class="stage__label">performance contract</span>
+                <ul class="ag-stack" data-gap="sm" style="margin:0;padding-left:18px;color:var(--ag-text-2);font-size:12.5px;line-height:1.7">
+                  <li>没有对 <code>width / height / top / left</code> 的过渡；进度、指示块与数字用 transform。</li>
+                  <li>环形仪表重绘的是小面积渐变，每秒一次，不进入滚动与逐帧路径。</li>
+                  <li>表格行、toast 与浮层在动画结束或关闭后才从 DOM 移除。</li>
+                  <li>虚拟列表只挂可见窗口，滚出屏幕的行回收到池里复用。</li>
+                  <li><code>prefers-reduced-motion</code> 下所有动画压到 0.01 ms。</li>
+                </ul>
+              </div>
+              <div>
+                <span class="stage__label">measure it yourself</span>
+                <p class="ag-hint">实验室里同时跑 100k 行虚拟列表与 240 个 60 Hz 仪表，并统计帧间隔与长任务。</p>
+                <div class="demo-row" style="margin-top:12px">
+                  <a class="ag-btn" data-variant="primary" href="./bench.html">打开性能实验室</a>
+                  <span class="ag-badge" data-tone="brand">实测优先</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <footer class="foot">
+          <span>Afterglow UI · MIT</span>
+          <span class="ag-spacer"></span>
+          <a href="https://github.com/Weidows/afterglow-ui" target="_blank" rel="noreferrer">github.com/Weidows/afterglow-ui</a>
+          <a href="./bench.html">Bench</a>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <!-- overlays live outside the document flow -->
+  <dialog class="ag-dialog" id="demo-dialog">
+    <div class="ag-dialog__head">
+      <div class="ag-spacer">
+        <h2 class="ag-dialog__title">启动缓存加速？</h2>
+        <p class="ag-dialog__desc">磁盘 3 将被脱机接管，盘符由本程序通过 iSCSI 回交。请确认没有进程正在写入。</p>
+      </div>
+      <button class="ag-iconbtn" data-dialog-close aria-label="关闭"><span data-icon="x" data-size="15"></span></button>
+    </div>
+    <div class="ag-dialog__body">
+      <div class="ag-stack">
+        <div class="ag-field">
+          <label class="ag-label" for="dlg-l2">L2 卷</label>
+          <select class="ag-select" id="dlg-l2">
+            <option>G: · Optane · 13 GiB 可用</option>
+            <option>H: · NVMe · 42 GiB 可用</option>
+          </select>
+        </div>
+        <label class="ag-choice">
+          <input class="ag-check" type="checkbox" checked />
+          <span class="ag-choice__text">我已停止该盘上的所有任务<span class="ag-choice__note">预检会再次确认序列号与页面文件</span></span>
+        </label>
+      </div>
+    </div>
+    <div class="ag-dialog__foot">
+      <span class="ag-spacer"></span>
+      <button class="ag-btn" data-variant="ghost" data-dialog-close>取消</button>
+      <button class="ag-btn" data-variant="primary" id="dialog-start">开始加速</button>
+    </div>
+  </dialog>
+
+  <div class="ag-menu" id="menu-actions" popover="manual">
+    <div class="ag-menu__label">磁盘 3</div>
+    <button class="ag-menu__item" role="menuitem"><span data-icon="bolt" data-size="14"></span>开始加速<span class="ag-menu__key">↵</span></button>
+    <button class="ag-menu__item" role="menuitem"><span data-icon="refresh" data-size="14"></span>重新联机<span class="ag-menu__key">R</span></button>
+    <button class="ag-menu__item" role="menuitem"><span data-icon="folder" data-size="14"></span>打开缓存目录</button>
+    <div class="ag-menu__sep"></div>
+    <button class="ag-menu__item" role="menuitem" data-tone="danger"><span data-icon="trash" data-size="14"></span>清除缓存账本</button>
+  </div>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>
