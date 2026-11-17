@@ -30,7 +30,6 @@ export default defineConfig(({ command, mode }) => {
   return {
     build: {
       target: "es2022",
-      minify: "esbuild",
       sourcemap: true,
       lib: {
         entry: "src/index.ts",

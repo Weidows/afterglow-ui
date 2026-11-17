@@ -5,3 +5,4 @@ dist-gallery/
 *.log
 .DS_Store
 *.tgz
+.vitest/
