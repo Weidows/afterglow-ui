@@ -41,7 +41,7 @@ import { toast, bindDialog, enhanceSelects } from "afterglow-ui";
 ```
 
 > 样式是独立文件，**必须显式引入一次**（或在你自己的 CSS 里 `@import "afterglow-ui/style.css"`）。
-> 发布体积：CSS 50 kB（gzip 9.7 kB）、ESM 54 kB（gzip 15.6 kB），无运行时依赖。
+> 发布体积：CSS 50 kB（gzip 9.8 kB）、ESM 51 kB（gzip 15.2 kB），无运行时依赖。
 
 ## 快速开始
 
