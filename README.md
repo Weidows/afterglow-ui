@@ -5,8 +5,9 @@
 给桌面监控类应用做的 UI 组件库：**零运行时依赖、CSS 优先、高频动效只碰合成层**。
 按钮、表单、浮层、表格、环形仪表、滚动数字与虚拟列表共用一份设计令牌，明暗主题与强调色由种子色推导。
 
-- 组件画廊：`npm run dev` → <http://127.0.0.1:5180/>
-- 性能实验室：<http://127.0.0.1:5180/bench.html>
+- 在线画廊：<https://weidows.github.io/afterglow-ui/>
+- 在线性能实验室：<https://weidows.github.io/afterglow-ui/bench.html>
+- 本地：`npm run dev` → <http://127.0.0.1:5180/>
 - 仓库：<https://github.com/Weidows/afterglow-ui>
 
 浅色主题预览：[docs/preview-light.png](docs/preview-light.png)
