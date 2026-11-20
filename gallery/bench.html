@@ -21,14 +21,14 @@
 <body class="ag-root">
   <header class="bench-top">
     <a class="bench-back" href="./index.html"><span data-icon="arrowRight" data-size="13"></span>返回组件库</a>
-    <div class="bench-title"><b>Performance lab</b><span>100k 行虚拟列表 · 240 个 60 Hz 仪表 · 帧间隔直方图</span></div>
+    <div class="bench-title"><b>Performance lab</b><span>100k 行虚拟列表 · 240 条合成器动画 · 帧间隔直方图</span></div>
   </header>
 
   <main class="bench-main">
     <section class="bench-hero">
       <span class="ag-eyebrow">motion contract, measured</span>
       <h1>不是"感觉流畅"，<br />是帧间隔说话。</h1>
-      <p>这一页不加载任何额外动画库。列表只渲染可见窗口，仪表只写 <code>--ag-v</code>，其余交给合成器。</p>
+      <p>这一页不加载任何额外动画库。列表只渲染可见窗口，240 条仪表各跑一条独立的合成器动画，主线程每帧零写入。</p>
     </section>
 
     <section class="bench-stats">
@@ -92,7 +92,7 @@
         <header class="bench-panel__head">
           <div>
             <h2>240 个仪表</h2>
-            <p class="ag-hint">每帧只写 CSS 变量，进度用 scaleX 合成。</p>
+            <p class="ag-hint">每格一条独立的 CSS 动画，位移交给合成器；主线程不参与逐帧绘制。</p>
           </div>
           <span class="ag-badge" data-tone="ok">60 Hz</span>
         </header>

@@ -7,7 +7,6 @@ import {
   el,
   enhanceSelects,
   icon,
-  onFrame,
   qsa,
   segmented,
   setText,
@@ -166,34 +165,23 @@ segmented($("#bench-stream"), {
 
 /* ---------------- 240 meters at rAF ---------------- */
 const meterHost = $("#bench-meters");
-interface Cell {
-  fill: HTMLElement;
-  label: HTMLElement;
-}
-const cells: Cell[] = [];
 
 for (let index = 0; index < 240; index++) {
   const cell = el("div", { class: "meter-cell" });
   const bar = el("div", { class: "meter-cell__bar" });
   const fill = el("div", { class: "meter-cell__fill" });
+  fill.style.setProperty("--i", String(index));
   bar.appendChild(fill);
   const label = el("span", { class: "meter-cell__idx" }, String(index));
   cell.append(bar, label);
   meterHost.appendChild(cell);
-  cells.push({ fill, label });
 }
 
-let frameCount = 0;
-onFrame((time) => {
-  if (!running) return;
-  frameCount++;
-  for (let index = 0; index < cells.length; index++) {
-    const cell = cells[index] as Cell;
-    const value = 0.18 + 0.78 * Math.abs(Math.sin(time / 620 + index * 0.37));
-    cell.fill.style.setProperty("--v", value.toFixed(3));
-    if (frameCount % 12 === 0) setText(cell.label, String(Math.round(value * 100)));
-  }
-});
+/* The wall is 240 independent compositor animations: each fill owns a CSS
+   keyframe track with its own duration and negative delay, so the main thread
+   does no per-frame work at all. The labels stay as slot numbers; the old
+   version wrote 240 style properties on every rAF, which is exactly the kind
+   of main-thread work this page exists to measure. */
 
 /* ---------------- naive vs keyed ---------------- */
 function measureNaive(rows: number, rounds: number): number {

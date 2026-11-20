@@ -127,6 +127,12 @@ body {
   transform: scaleY(var(--v, 0.2));
   background: linear-gradient(180deg, var(--ag-brand), color-mix(in oklab, var(--ag-brand) 40%, var(--ag-track)));
   opacity: 0.9;
+  animation: bench-meter calc(2.4s + var(--i, 0) * 8ms) ease-in-out calc(var(--i, 0) * -53ms) infinite;
+}
+
+@keyframes bench-meter {
+  0%, 100% { transform: scaleY(0.16); }
+  50% { transform: scaleY(0.96); }
 }
 .meter-cell:nth-child(3n) .meter-cell__fill { background: linear-gradient(180deg, var(--ag-ok), color-mix(in oklab, var(--ag-ok) 35%, var(--ag-track))); }
 .meter-cell:nth-child(5n) .meter-cell__fill { background: linear-gradient(180deg, var(--ag-warn), color-mix(in oklab, var(--ag-warn) 35%, var(--ag-track))); }
